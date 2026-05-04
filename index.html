@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DescriptIA — Descriptions produits par IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #fafaf8;
+    --cream: #f5f2ec;
+    --accent: #c8a96e;
+    --accent-dark: #a8853e;
+    --gray: #6b6b6b;
+    --light-gray: #e8e5e0;
+    --card-bg: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(250,250,248,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--light-gray);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a {
+    text-decoration: none; color: var(--gray);
+    font-size: 0.9rem; font-weight: 400;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--black); }
+  .nav-cta {
+    background: var(--black); color: var(--white) !important;
+    padding: 0.6rem 1.4rem; border-radius: 4px;
+    font-weight: 500 !important; font-size: 0.85rem !important;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--accent) !important; color: var(--white) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,169,110,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -150px; left: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(200,169,110,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--white); border: 1px solid var(--light-gray);
+    padding: 0.4rem 1rem; border-radius: 100px;
+    font-size: 0.8rem; color: var(--gray);
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-badge::before {
+    content: '●'; color: var(--accent); font-size: 0.6rem;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    max-width: 800px;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  h1 em { color: var(--accent); font-style: italic; }
+  .hero-sub {
+    font-size: 1.1rem; color: var(--gray);
+    max-width: 500px; line-height: 1.7;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-btns {
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--black); color: var(--white);
+    padding: 0.9rem 2rem; border-radius: 4px;
+    font-size: 0.95rem; font-weight: 500;
+    border: none; cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--black);
+    padding: 0.9rem 2rem; border-radius: 4px;
+    font-size: 0.95rem; font-weight: 400;
+    border: 1px solid var(--black); cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-outline:hover { background: var(--black); color: var(--white); }
+  .hero-stats {
+    display: flex; gap: 3rem; margin-top: 4rem;
+    padding-top: 3rem; border-top: 1px solid var(--light-gray);
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-n {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 500; color: var(--black);
+  }
+  .stat-l { font-size: 0.8rem; color: var(--gray); margin-top: 2px; }
+
+  /* TOOL SECTION */
+  .section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 500; letter-spacing: -0.02em;
+    margin-bottom: 0.8rem;
+  }
+  .section-sub { color: var(--gray); font-size: 1rem; line-height: 1.7; margin-bottom: 3rem; }
+
+  .tool-wrapper {
+    background: var(--card-bg);
+    border: 1px solid var(--light-gray);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.06);
+  }
+  .tool-header {
+    background: var(--black); padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .tool-body { padding: 2rem; }
+  .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+  .field label {
+    display: block; font-size: 0.8rem; font-weight: 500;
+    color: var(--gray); margin-bottom: 6px; letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 0.75rem 1rem;
+    border: 1px solid var(--light-gray); border-radius: 6px;
+    font-size: 0.95rem; font-family: 'DM Sans', sans-serif;
+    color: var(--black); background: var(--white);
+    transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .field textarea { resize: vertical; min-height: 90px; }
+  .generate-btn {
+    width: 100%; background: var(--black); color: var(--white);
+    border: none; padding: 1rem; border-radius: 6px;
+    font-size: 1rem; font-weight: 500; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s; margin-top: 0.5rem;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .generate-btn:hover { background: var(--accent); }
+  .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .result-area {
+    margin-top: 1.5rem; padding: 1.5rem;
+    background: var(--cream); border-radius: 8px;
+    border-left: 3px solid var(--accent);
+    display: none;
+  }
+  .result-area p { font-size: 0.95rem; line-height: 1.8; color: var(--black); }
+  .result-actions {
+    display: flex; gap: 0.5rem; margin-top: 1rem;
+  }
+  .btn-small {
+    padding: 0.4rem 1rem; border-radius: 4px; font-size: 0.8rem;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-copy { background: var(--black); color: var(--white); border: none; }
+  .btn-copy:hover { background: var(--accent); }
+  .btn-regen { background: transparent; color: var(--black); border: 1px solid var(--light-gray); }
+  .btn-regen:hover { border-color: var(--black); }
+  .loading-dots { display: inline-flex; gap: 4px; }
+  .loading-dots span {
+    width: 6px; height: 6px; background: var(--white); border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  /* PRICING */
+  .pricing-section {
+    background: var(--cream); padding: 6rem 2rem;
+  }
+  .pricing-inner { max-width: 1000px; margin: 0 auto; }
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .plan-card {
+    background: var(--white); border: 1px solid var(--light-gray);
+    border-radius: 12px; padding: 2rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .plan-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+  .plan-card.featured {
+    background: var(--black); color: var(--white);
+    border-color: var(--black);
+  }
+  .plan-tag {
+    display: inline-block; font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 100px;
+    background: var(--accent); color: var(--white);
+    margin-bottom: 1rem;
+  }
+  .plan-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 500; margin-bottom: 0.5rem;
+  }
+  .plan-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem; font-weight: 500; margin: 1rem 0;
+  }
+  .plan-price span { font-size: 1rem; font-weight: 300; color: var(--gray); }
+  .plan-card.featured .plan-price span { color: rgba(255,255,255,0.5); }
+  .plan-divider { height: 1px; background: var(--light-gray); margin: 1.2rem 0; }
+  .plan-card.featured .plan-divider { background: rgba(255,255,255,0.1); }
+  .plan-features { list-style: none; }
+  .plan-features li {
+    font-size: 0.88rem; padding: 5px 0; color: var(--gray);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .plan-card.featured .plan-features li { color: rgba(255,255,255,0.7); }
+  .plan-features li::before { content: '✓'; color: var(--accent); font-weight: 600; }
+  .plan-btn {
+    width: 100%; margin-top: 1.5rem; padding: 0.8rem;
+    border-radius: 6px; font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .plan-btn-dark { background: var(--black); color: var(--white); border: none; }
+  .plan-btn-dark:hover { background: var(--accent); }
+  .plan-btn-white { background: var(--white); color: var(--black); border: none; }
+  .plan-btn-white:hover { background: var(--accent); color: var(--white); }
+  .plan-btn-outline { background: transparent; color: var(--black); border: 1px solid var(--light-gray); }
+  .plan-btn-outline:hover { border-color: var(--black); }
+
+  /* SHOP */
+  .shop-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem;
+    margin-top: 2rem;
+  }
+  .shop-card {
+    background: var(--card-bg); border: 1px solid var(--light-gray);
+    border-radius: 10px; padding: 1.5rem;
+    transition: all 0.2s;
+  }
+  .shop-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.07); transform: translateY(-2px); }
+  .shop-emoji { font-size: 1.8rem; margin-bottom: 1rem; }
+  .shop-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 500; margin-bottom: 0.4rem; }
+  .shop-desc { font-size: 0.82rem; color: var(--gray); line-height: 1.5; margin-bottom: 1rem; }
+  .shop-price { font-size: 1.2rem; font-weight: 500; color: var(--accent); margin-bottom: 0.8rem; }
+  .shop-btn {
+    width: 100%; padding: 0.6rem; border-radius: 4px; font-size: 0.82rem;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    background: transparent; color: var(--black);
+    border: 1px solid var(--light-gray); transition: all 0.2s;
+  }
+  .shop-btn:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+
+  /* FOOTER */
+  footer {
+    background: var(--black); color: var(--white);
+    padding: 3rem 2rem; text-align: center;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; margin-bottom: 0.8rem;
+  }
+  .footer-logo span { color: var(--accent); }
+  footer p { color: rgba(255,255,255,0.4); font-size: 0.82rem; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero-stats { gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+    .tool-grid { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .shop-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Descript<span>IA</span></div>
+  <div class="nav-links">
+    <a href="#outil">Outil</a>
+    <a href="#tarifs">Tarifs</a>
+    <a href="#boutique">Boutique</a>
+    <a href="#outil" class="nav-cta">Essayer gratuitement</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Propulsé par l'intelligence artificielle</div>
+  <h1>Vos fiches produits rédigées en <em>10 secondes</em></h1>
+  <p class="hero-sub">Fini les heures perdues à rédiger. Notre IA génère des descriptions optimisées SEO qui convertissent, pour chaque produit de votre boutique.</p>
+  <div class="hero-btns">
+    <a href="#outil" class="btn-primary">Générer ma première description</a>
+    <a href="#tarifs" class="btn-outline">Voir les offres</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-n">2 400+</div><div class="stat-l">e-commerçants</div></div>
+    <div class="stat"><div class="stat-n">98 000+</div><div class="stat-l">descriptions générées</div></div>
+    <div class="stat"><div class="stat-n">+34%</div><div class="stat-l">taux de conversion moyen</div></div>
+  </div>
+</section>
+
+<!-- OUTIL -->
+<section id="outil" style="padding: 6rem 2rem; background: var(--white);">
+  <div style="max-width: 800px; margin: 0 auto;">
+    <div class="section-label">Outil IA</div>
+    <h2 class="section-title">Générez votre description</h2>
+    <p class="section-sub">Renseignez les informations de votre produit — l'IA s'occupe du reste.</p>
+
+    <div class="tool-wrapper">
+      <div class="tool-header">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+      <div class="tool-body">
+        <div class="tool-grid">
+          <div class="field">
+            <label>Nom du produit</label>
+            <input type="text" id="product-name" placeholder="ex: Montre connectée sport" />
+          </div>
+          <div class="field">
+            <label>Catégorie</label>
+            <select id="category">
+              <option value="mode">Mode & Vêtements</option>
+              <option value="tech">Tech & Électronique</option>
+              <option value="maison">Maison & Déco</option>
+              <option value="beaute">Beauté & Cosmétique</option>
+              <option value="sport">Sport & Fitness</option>
+              <option value="alimentaire">Alimentation</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom: 1.2rem;">
+          <label>Caractéristiques principales</label>
+          <textarea id="features" placeholder="Résistant à l'eau 50m&#10;Autonomie 7 jours&#10;GPS intégré&#10;..."></textarea>
+        </div>
+        <div class="field">
+          <label>Ton souhaité</label>
+          <select id="tone">
+            <option value="professionnel">Professionnel & Élégant</option>
+            <option value="enthousiaste">Enthousiaste & Dynamique</option>
+            <option value="minimaliste">Minimaliste & Épuré</option>
+            <option value="storytelling">Storytelling & Émotionnel</option>
+          </select>
+        </div>
+        <button class="generate-btn" id="gen-btn" onclick="generateDescription()">
+          <span id="btn-text">Générer la description</span>
+        </button>
+        <div class="result-area" id="result-area">
+          <p id="result-text"></p>
+          <div class="result-actions">
+            <button class="btn-small btn-copy" onclick="copyText()">Copier</button>
+            <button class="btn-small btn-regen" onclick="generateDescription()">Régénérer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TARIFS -->
+<section id="tarifs" class="pricing-section">
+  <div class="pricing-inner">
+    <div class="section-label">Tarifs</div>
+    <h2 class="section-title">Commencez gratuitement</h2>
+    <p class="section-sub">Évoluez selon vos besoins, sans engagement.</p>
+    <div class="pricing-grid">
+      <div class="plan-card">
+        <div class="plan-name">Gratuit</div>
+        <div class="plan-price">0€ <span>/mois</span></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>10 descriptions par mois</li>
+          <li>3 tons disponibles</li>
+          <li>Export texte simple</li>
+        </ul>
+        <button class="plan-btn plan-btn-outline">Commencer</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-tag">Le plus populaire</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">19€ <span>/mois</span></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>500 descriptions par mois</li>
+          <li>Tous les tons disponibles</li>
+          <li>Optimisation SEO incluse</li>
+          <li>Export CSV & Shopify</li>
+        </ul>
+        <button class="plan-btn plan-btn-white">Choisir Pro</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Business</div>
+        <div class="plan-price">49€ <span>/mois</span></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Descriptions illimitées</li>
+          <li>Accès API complet</li>
+          <li>Import catalogue CSV</li>
+          <li>Support prioritaire</li>
+        </ul>
+        <button class="plan-btn plan-btn-dark">Choisir Business</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOUTIQUE -->
+<section id="boutique" style="padding: 6rem 2rem; background: var(--white);">
+  <div style="max-width: 1100px; margin: 0 auto;">
+    <div class="section-label">Boutique</div>
+    <h2 class="section-title">Templates prêts à l'emploi</h2>
+    <p class="section-sub">Des packs de descriptions rédigées par des experts, à personnaliser en quelques secondes.</p>
+    <div class="shop-grid">
+      <div class="shop-card">
+        <div class="shop-emoji">🛍️</div>
+        <div class="shop-name">Pack Mode & Luxe</div>
+        <div class="shop-desc">50 templates pour vêtements, accessoires et bijoux haut de gamme</div>
+        <div class="shop-price">12€</div>
+        <button class="shop-btn">Acheter</button>
+      </div>
+      <div class="shop-card">
+        <div class="shop-emoji">📱</div>
+        <div class="shop-name">Pack Tech & Gadgets</div>
+        <div class="shop-desc">60 templates pour produits électroniques et objets connectés</div>
+        <div class="shop-price">14€</div>
+        <button class="shop-btn">Acheter</button>
+      </div>
+      <div class="shop-card">
+        <div class="shop-emoji">🏠</div>
+        <div class="shop-name">Pack Maison & Déco</div>
+        <div class="shop-desc">40 templates lifestyle pour mobilier et articles de maison</div>
+        <div class="shop-price">10€</div>
+        <button class="shop-btn">Acheter</button>
+      </div>
+      <div class="shop-card">
+        <div class="shop-emoji">💄</div>
+        <div class="shop-name">Pack Beauté & Soin</div>
+        <div class="shop-desc">45 templates pour cosmétiques, soins et produits bien-être</div>
+        <div class="shop-price">12€</div>
+        <button class="shop-btn">Acheter</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Descript<span>IA</span></div>
+  <p>© 2026 DescriptIA — Tous droits réservés</p>
+</footer>
+
+<script>
+  // ⚠️ Remplace cette clé par ta vraie clé API Anthropic
+  const ANTHROPIC_API_KEY = 'ANTHROPIC_KEY';
+
+  async function generateDescription() {
+    const name = document.getElementById('product-name').value.trim();
+    const category = document.getElementById('category').value;
+    const features = document.getElementById('features').value.trim();
+    const tone = document.getElementById('tone').value;
+    const btn = document.getElementById('gen-btn');
+    const btnText = document.getElementById('btn-text');
+    const resultArea = document.getElementById('result-area');
+    const resultText = document.getElementById('result-text');
+
+    if (!name) {
+      alert('Veuillez entrer un nom de produit.');
+      return;
+    }
+
+    btn.disabled = true;
+    btnText.innerHTML = `Génération <span class="loading-dots"><span></span><span></span><span></span></span>`;
+    resultArea.style.display = 'none';
+
+    const prompt = `Tu es un expert en copywriting e-commerce francophone. Génère une description produit en français avec le ton "${tone}" pour ce produit :
+
+Nom : ${name}
+Catégorie : ${category}
+Caractéristiques : ${features || 'non précisées'}
+
+La description doit :
+- Faire 3 à 5 phrases percutantes
+- Être orientée bénéfices client (pas juste les specs)
+- Être optimisée SEO naturellement
+- Inciter à l'achat sans être agressif
+
+Réponds UNIQUEMENT avec la description, sans titre ni explication.`;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      const data = await response.json();
+      const text = data.content?.map(b => b.text || '').join('') || 'Erreur lors de la génération.';
+      resultText.textContent = text;
+      resultArea.style.display = 'block';
+    } catch (e) {
+      resultText.textContent = 'Erreur de connexion. Vérifiez votre connexion et réessayez.';
+      resultArea.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = 'Générer la description';
+    }
+  }
+
+  function copyText() {
+    const text = document.getElementById('result-text').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.btn-copy');
+      btn.textContent = 'Copié !';
+      setTimeout(() => btn.textContent = 'Copier', 2000);
+    });
+  }
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
