@@ -596,15 +596,16 @@ const text = data.text || 'Erreur lors de la génération.';
       document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
     });
   });
-</script>
+
   async function checkout(priceId, mode) {
-  const response = await fetch('/.netlify/functions/checkout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ priceId, mode })
-  });
-  const data = await response.json();
-  if (data.url) window.location.href = data.url;
-}
+    const response = await fetch('/.netlify/functions/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId, mode })
+    });
+    const data = await response.json();
+    if (data.url) window.location.href = data.url;
+  }
+</script>
 </body>
 </html>
