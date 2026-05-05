@@ -490,28 +490,28 @@
         <div class="shop-name">Pack Mode & Luxe</div>
         <div class="shop-desc">50 templates pour vêtements, accessoires et bijoux haut de gamme</div>
         <div class="shop-price">12€</div>
-        <button class="shop-btn">Acheter</button>
+        <button class="shop-btn" onclick="checkout('price_1TTVLeLDNxLBJtZYRSf4AVyU', 'payment')">Acheter</button>
       </div>
       <div class="shop-card">
         <div class="shop-emoji">📱</div>
         <div class="shop-name">Pack Tech & Gadgets</div>
         <div class="shop-desc">60 templates pour produits électroniques et objets connectés</div>
         <div class="shop-price">14€</div>
-        <button class="shop-btn">Acheter</button>
+        <button class="shop-btn" onclick="checkout('price_1TTVLvLDNxLBJtZYATOR7PYG', 'payment')">Acheter</button>
       </div>
       <div class="shop-card">
         <div class="shop-emoji">🏠</div>
         <div class="shop-name">Pack Maison & Déco</div>
         <div class="shop-desc">40 templates lifestyle pour mobilier et articles de maison</div>
         <div class="shop-price">10€</div>
-        <button class="shop-btn">Acheter</button>
+        <button class="shop-btn" onclick="checkout('price_1TTVMJLDNxLBJtZYplUepimh', 'payment')">Acheter</button>
       </div>
       <div class="shop-card">
         <div class="shop-emoji">💄</div>
         <div class="shop-name">Pack Beauté & Soin</div>
         <div class="shop-desc">45 templates pour cosmétiques, soins et produits bien-être</div>
         <div class="shop-price">12€</div>
-        <button class="shop-btn">Acheter</button>
+        <button class="shop-btn" onclick="checkout('price_1TTVMbLDNxLBJtZYIkfiky28', 'payment')">Acheter</button>
       </div>
     </div>
   </div>
@@ -597,5 +597,14 @@ const text = data.text || 'Erreur lors de la génération.';
     });
   });
 </script>
+  async function checkout(priceId, mode) {
+  const response = await fetch('/.netlify/functions/checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ priceId, mode })
+  });
+  const data = await response.json();
+  if (data.url) window.location.href = data.url;
+}
 </body>
 </html>
